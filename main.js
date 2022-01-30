@@ -4,21 +4,24 @@ const ctx = canvas.getContext('2d');
 
 const title = document.querySelector("h1");
 
-const snakeSize = 50;
-let snakeSpeed = snakeSize;
+const tileSize = 50;
+let snakeSpeed = tileSize;
 let snakePosX = 0;
 let snakePosY = canvas.height / 2;
+
+let tail = [];
+let snakeLen = 3;
 
 let velocityX = 0;
 let velocityY = 0;
 
 let score = 0;
 
-const tileCountX = canvas.width / snakeSize;
-const tileCountY = canvas.height / snakeSize;
+const tileCountX = canvas.width / tileSize;
+const tileCountY = canvas.height / tileSize;
 
-let foodX = Math.floor(Math.random() * tileCountX) * snakeSize;
-let foodY = Math.floor(Math.random() * tileCountY) * snakeSize;
+let foodX = Math.floor(Math.random() * tileCountX) * tileSize;
+let foodY = Math.floor(Math.random() * tileCountY) * tileSize;
 
 gameLoop();
 
@@ -26,7 +29,7 @@ function MoveAll() {
     snakePosX += snakeSpeed * velocityX;
     snakePosY += snakeSpeed * velocityY;
 
-    if (snakePosX > canvas.width - snakeSize) {
+    if (snakePosX > canvas.width - tileSize) {
         snakePosX = 0;
     }
 
@@ -34,7 +37,7 @@ function MoveAll() {
         snakePosX =  canvas.width;
     }
 
-    if (snakePosY > canvas.height - snakeSize) {
+    if (snakePosY > canvas.height - tileSize) {
         snakePosY = 0;
     }
 
@@ -42,12 +45,17 @@ function MoveAll() {
         snakePosY =  canvas.height;
     }
 
+    tail = tail.slice(-1 * snakeLen)
+
+    tail.push({x: snakePosX, y: snakePosY})
+
     DrawAll();
 
     if (snakePosX === foodX && snakePosY === foodY) {
-        foodX = Math.floor(Math.random() * tileCountX) * snakeSize;
-        foodY = Math.floor(Math.random() * tileCountY) * snakeSize;
+        foodX = Math.floor(Math.random() * tileCountX) * tileSize;
+        foodY = Math.floor(Math.random() * tileCountY) * tileSize;
         title.textContent = ++score;
+        snakeLen++;
     }
 }
 
@@ -56,9 +64,13 @@ function DrawAll() {
 
     drawGrid();
 
-    rectangle("blue", foodX, foodY, snakeSize-1, snakeSize-1);
+    rectangle("blue", foodX, foodY, tileSize-1, tileSize-1);
 
-    rectangle("black", snakePosX, snakePosY, snakeSize, snakeSize); 
+    tail.forEach(snakePart =>
+        rectangle("#808080", snakePart.x, snakePart.y, tileSize, tileSize)    
+    )
+
+    rectangle("black", snakePosX, snakePosY, tileSize, tileSize); 
 }
 
 function gameLoop(){
@@ -74,7 +86,7 @@ function rectangle(color,x,y,width, height) {
 function drawGrid() {
     for ( let i = 0; i < tileCountX; i++ ) {
         for (let j = 0; j < tileCountY; j++){
-            rectangle('#fff', snakeSize * i, snakeSize * j, snakeSize - 1, snakeSize - 1);
+            rectangle('#fff', tileSize * i, tileSize * j, tileSize - 1, tileSize - 1);
         }
     }
 }
