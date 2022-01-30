@@ -1,7 +1,6 @@
 document.addEventListener('keydown', keyPush);
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext('2d');
-
 const title = document.querySelector("h1");
 
 let gameRunning = true;
@@ -24,7 +23,12 @@ const tileCountY = canvas.height / tileSize;
 let foodX = Math.floor(Math.random() * tileCountX) * tileSize;
 let foodY = Math.floor(Math.random() * tileCountY) * tileSize;
 
+var startAudio = new Audio('start.mp3');
+var foodAudio = new Audio('nice.mp3');
+
+startAudio.play();
 gameLoop();
+
 
 function MoveAll() {
     snakePosX += snakeSpeed * velocityX;
@@ -51,6 +55,7 @@ function MoveAll() {
             gameOver();
         }
     });
+    
     if (velocityX != 0 || velocityY != 0){
         tail.push({x: snakePosX, y: snakePosY})
         tail = tail.slice(-1 * snakeLen)
@@ -59,21 +64,21 @@ function MoveAll() {
     DrawAll();
 
     if (snakePosX === foodX && snakePosY === foodY) {
-    if (tail.some((snakePart) => snakePart.x === foodX && snakePart.y === foodY)){
+        foodAudio.play();
         ResetFood();
-    }               
-
         title.innerHTML = `SCORE: ${++score}`;
         snakeLen++;
-
-
     }
 }
+
 
 function gameOver(){
     gameRunning = false;
     title.innerHTML = `💀<strong>SCORE: ${score}</strong>💀`
+    var lossAudio = new Audio('loss.mp3');
+    lossAudio.play();
 }
+
 
 function ResetFood(){
 
@@ -83,7 +88,12 @@ function ResetFood(){
 
     foodX = Math.floor(Math.random() * tileCountX) * tileSize;
     foodY = Math.floor(Math.random() * tileCountY) * tileSize;
+
+    if (tail.some((snakePart) => snakePart.x === foodX && snakePart.y === foodY)){
+        ResetFood();
+    }  
 }
+
 
 function DrawAll() {
     rectangle("#ffbf00", 0, 0, canvas.width, canvas.height);
@@ -99,6 +109,7 @@ function DrawAll() {
     rectangle("black", snakePosX, snakePosY, tileSize, tileSize); 
 }
 
+
 function gameLoop(){
     if (gameRunning) {
         MoveAll();
@@ -106,10 +117,12 @@ function gameLoop(){
     }
 }
 
+
 function rectangle(color,x,y,width, height) {
     ctx.fillStyle = color;
     ctx.fillRect(x ,y ,width ,height);
 }
+
 
 function drawGrid() {
     for ( let i = 0; i < tileCountX; i++ ) {
@@ -118,6 +131,7 @@ function drawGrid() {
         }
     }
 }
+
 
 function keyPush(event) {
     switch(event.key) {
