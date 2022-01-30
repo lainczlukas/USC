@@ -1,7 +1,16 @@
 body {
     background: #ffbf00;
+    text-align: center;
 }
 
 canvas {
     border: 10px solid #f7347a;
+}
+
+h1 {
+    margin-top: 0;
+    font-size:  4m;
+    font-family: 'Avenir Next', Verdana;
+    font-weight: bold;
+    letter-spacing: -10px;
 }
