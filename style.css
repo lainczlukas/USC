@@ -13,3 +13,9 @@ h1 {
     font-family: 'Avenir Next', Verdana;
     font-weight: bold;
 }
+
+h1 strong {
+    font-size: 1.35em;
+    display: inline-block;
+    margin: 0.25;
+}

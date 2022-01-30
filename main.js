@@ -4,6 +4,7 @@ const ctx = canvas.getContext('2d');
 
 const title = document.querySelector("h1");
 
+let gameRunning = true;
 const tileSize = 50;
 let snakeSpeed = tileSize;
 let snakePosX = 0;
@@ -45,18 +46,43 @@ function MoveAll() {
         snakePosY =  canvas.height;
     }
 
-    tail = tail.slice(-1 * snakeLen)
-
-    tail.push({x: snakePosX, y: snakePosY})
+    tail.forEach(snakePart => {
+        if (snakePosX === snakePart.x && snakePosY === snakePart.y){
+            gameOver();
+        }
+    });
+    if (velocityX != 0 || velocityY != 0){
+        tail.push({x: snakePosX, y: snakePosY})
+        tail = tail.slice(-1 * snakeLen)
+    }
 
     DrawAll();
 
     if (snakePosX === foodX && snakePosY === foodY) {
-        foodX = Math.floor(Math.random() * tileCountX) * tileSize;
-        foodY = Math.floor(Math.random() * tileCountY) * tileSize;
-        title.textContent = ++score;
+    if (tail.some((snakePart) => snakePart.x === foodX && snakePart.y === foodY)){
+        ResetFood();
+    }               
+
+        title.innerHTML = `SCORE: ${++score}`;
         snakeLen++;
+
+
     }
+}
+
+function gameOver(){
+    gameRunning = false;
+    title.innerHTML = `💀<strong>SCORE: ${score}</strong>💀`
+}
+
+function ResetFood(){
+
+    if (snakeLen === tileCountX * tileCountY){
+        gameOver();
+    }
+
+    foodX = Math.floor(Math.random() * tileCountX) * tileSize;
+    foodY = Math.floor(Math.random() * tileCountY) * tileSize;
 }
 
 function DrawAll() {
@@ -74,8 +100,10 @@ function DrawAll() {
 }
 
 function gameLoop(){
-    MoveAll();
-    setTimeout(gameLoop, 1000 / 15);
+    if (gameRunning) {
+        MoveAll();
+        setTimeout(gameLoop, 1000 / 15);
+    }
 }
 
 function rectangle(color,x,y,width, height) {
@@ -116,6 +144,9 @@ function keyPush(event) {
             velocityY = 0;
             velocityX = 1;
             }
+            break;
+        default:
+            if (!gameRunning) location.reload();
             break;
     }
 }
